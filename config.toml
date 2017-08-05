@@ -1,5 +1,6 @@
 baseURL = "https://faiface.github.io/"
 languageCode = "en-us"
-title = "My New Hugo Site"
+title = "faiface blog"
 theme = "paperback"
 publishDir = "../faiface.github.io/"
+disqusShortname = "faiface-github-io"
