@@ -1,7 +1,7 @@
 ---
 title: "Context should go away for Go 2"
-date: 2017-08-05T18:58:25+02:00
-draft: true
+date: 2017-08-06T18:58:25+02:00
+draft: false
 ---
 
 As usual, when a new blog post comes out on [blog.golang.org](https://blog.golang.org/), I'm all
@@ -25,15 +25,16 @@ I did some research and found that some people already [proposed this
 change](https://github.com/golang/go/issues/20280) for Go 2. Thankfully it received a decent amount
 of thumbs down, so it's likely not making it.
 
-This post is about all of the things that are wrong with the `"context"` package in general and that
-Go 2 should do something about it. So, grab some popcorn and let's get started!
+This post is about all of the things that are wrong with the `"context"` package, why it is useful
+ despite that, and that Go 2 should do something about it. So, grab some popcorn and let's get
+ started!
 
 ## Go is a general purpose language
 
-First things first, let's estabilish some ground. Go is a *good* language for writing servers, but
-Go is not a *language for writing servers*. Go is a *general purpose programming language*, just
-like C, C++, Java or Python. For example, I use Go for about 2 years and I've never written a single
-server in it.
+First things first, let's establish some ground. Go is a *good* language for writing servers, but Go
+is not a *language for writing servers*. Go is a *general purpose programming language*, just like
+C, C++, Java or Python. For example, I've been using Go for about 2 years and I've never written a
+single server in it.
 
 For this reason, when designing the Go language and it's standard library, we need to approach it
 from a general purpose language perspective. Now, I'm not trying to say that context is only useful
@@ -55,7 +56,7 @@ In short, if you're writing a library that has function which can take some sign
 time and your library is *potentially* going to be used by a server application, you have to accept
 a context in those functions.
 
-This is how context spreads like a virus. What's bad about that? Let's recap:
+That's how context spreads like a virus. What's bad about that? Let's recap:
 
 1. Go is a general purpose language.
 2. If a library is *potentially* going to be used by a server, it should accept a context.
@@ -77,10 +78,10 @@ without a context.* Sure, just take a look at the
 [`"database/sql"`](https://golang.org/pkg/database/sql/) package. Although it does solve the problem
 partially, it smells quite bad.
 
-Also, imagine teaching Go to a student. You start explaing the context-equiped `io.Reader` interface
-(or anything else which occasionally requires a context) to them and they ask: *What is that `ctx
-context.Context` thingy there?* And the answer would probably just be: *Don't worry about that, just
-pass `context.TODO` there for now.* Sounds a lot like `public static void` to me.
+Also, imagine teaching Go to a student. You start explaining the context-equipped `io.Reader`
+interface (or anything else which occasionally requires a context) to them and they ask: *What is
+that `ctx context.Context` thingy there?* And the answer would probably just be: *Don't worry about
+that, just pass `context.TODO` there for now.* Sounds a lot like `public static void` to me.
 
 The message is: Context spreads like a virus and I (alongside almost everyone who doesn't write
 servers in Go) don't want to deal with it when I don't have to.
@@ -103,11 +104,14 @@ meaningless objects. There are just so many things that are wrong with it. Let's
 4. This probably doesn't happen often, but it's prone to name collisions.
 5. It's just magic. An error-prone magic.
 
+I know that `ctx.Value` makes some things easier. But, I believe that designing your APIs without
+`ctx.Value` in mind at all makes it always possible to come up with alternatives.
+
 ### Context is mostly an inefficient linked list
 
 The way `WithCancel`, `WithDeadline`, etc. constructors from the `"context"` package work is they
 create a linked list. Among other things, this requires creating a
-[goroutine](https://golang.org/src/context/context.go?s=8329:8393#L261) for each `WithCancel`, which
+[goroutine](https://golang.org/src/context/context.go#L261) for (almost) each `WithCancel`, which
 propagates cancelation signals from the previous context to the new one. Of course, if the context
 is never canceled, this goroutine is leaked.
 
@@ -134,9 +138,9 @@ One of the things Go was [created to avoid](https://www.youtube.com/watch?v=rKnD
 
 ## What does the `"context"` package actually solve?
 
-Despite all of the bad things I described above, the `"context"` package is genuinely useful,
-because it solves one thing that is kinda hard to do in Go: **cancelation**. That's the only problem
-the `"context"` package really solves (or attempts to solve).
+Despite all of the bad things described above, the `"context"` package is genuinely useful, because
+it solves one thing that is kinda hard to do in Go: **cancelation**. That's the only problem the
+`"context"` package really solves (or attempts to solve).
 
 Let's face it, cancelation in Go is hard. There is a whole talk called ['Advanced Go Concurrency
 Patterns'](https://www.youtube.com/watch?v=QDDwwePbDtw), which discusses this problem in depth. This
@@ -150,12 +154,12 @@ of them:
    cancelation is only possible 'in-between' the slow operations.
 2. Considering a 'tree of goroutines' (where children goroutines are the ones spawned by the parent
    goroutines), it's easy to cancel the whole tree (just close the cancelation channel), but it's
-   hard to cancel a sub-tree (you need to introduce another channel for that, or some other
+   harder to cancel a sub-tree (you need to introduce another channel for that, or some other
    solution).
 
-The `"context"` package does solve these problems. Inefficienlty and with numerous problems, but
+The `"context"` package does solve these problems. Inefficiently and with numerous problems, but
 solves them better than anything else out there. **In Go, we need to be able to solve the
-cancelation problem**. Solving it is usually neccessary anytime a decent usage of goroutines is
+cancelation problem**. Solving it is usually necessary anytime a decent usage of goroutines is
 involved.
 
 ## Go 2 should explicitly address the cancelation problem
@@ -169,10 +173,10 @@ solution, which is:
 1. Simple and elegant.
 2. Optional, non-intrusive and non-infectious.
 3. Robust and efficient.
-4. Only solves the cancelation problem. Values can be ommited. Timeouts can also be implemented on
+4. Only solves the cancelation problem. Values can be omitted. Timeouts can also be implemented on
    top of a very simple cancelation.
 
-You might argue: *I like context, it's an elegant solution to a problem without changing or
+You might argue: *I like context, it's an elegant solution to the problem without changing or
 complicating the language*. I disagree. For all the reasons described above it's not an elegant
 solution and although it's not an integral part of the language, it is and is becoming more and more
 an integral part of the libraries. In the end, it makes the language harder to use.
@@ -189,3 +193,5 @@ does not solve this problem very well. I can't think of any other solution that 
 problem good except for a language change. That is up for Go 2.
 
 Thanks for reading and I'm looking forward to your feedback and ~~hate comments~~ objections ;).
+
+Michal Štrba
