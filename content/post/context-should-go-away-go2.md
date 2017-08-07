@@ -62,13 +62,13 @@ That's how context spreads like a virus. What's bad about that? Let's recap:
 2. If a library is *potentially* going to be used by a server, it should accept a context.
 3. Now, everyone has to deal with the context, even the ones who don't need it.
 
-Of course, I can just pass `context.TODO` everywhere, but that's just gross, it hurts readability,
+Of course, I can just pass `context.TODO()` everywhere, but that's just gross, it hurts readability,
 makes my code look ugly and simply removes a part of fun I have with Go.
 
 If the Go language ever comes to the point where I'd have to write this
 
 ```go
-n, err := r.Read(context.TODO, p)
+n, err := r.Read(context.TODO(), p)
 ```
 
 put a bullet in my head, please.
@@ -81,7 +81,7 @@ partially, it smells quite bad.
 Also, imagine teaching Go to a student. You start explaining the context-equipped `io.Reader`
 interface (or anything else which occasionally requires a context) to them and they ask: *What is
 that `ctx context.Context` thingy there?* And the answer would probably just be: *Don't worry about
-that, just pass `context.TODO` there for now.* Sounds a lot like `public static void` to me.
+that, just pass `context.TODO()` there for now.* Sounds a lot like `public static void` to me.
 
 The message is: Context spreads like a virus and I (alongside almost everyone who doesn't write
 servers in Go) don't want to deal with it when I don't have to.
