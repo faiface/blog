@@ -110,10 +110,10 @@ I know that `ctx.Value` makes some things easier. But, I believe that designing 
 ### Context is mostly an inefficient linked list
 
 The way `WithCancel`, `WithDeadline`, etc. constructors from the `"context"` package work is they
-create a linked list. Among other things, this requires creating a
-[goroutine](https://golang.org/src/context/context.go#L261) for (almost) each `WithCancel`, which
-propagates cancelation signals from the previous context to the new one. Of course, if the context
-is never canceled, this goroutine is leaked.
+create a linked list. Among other things, this sometimes requires creating a
+[goroutine](https://golang.org/src/context/context.go#L261) for `WithCancel`, which propagates
+cancelation signals from the previous context to the new one. Of course, if the context is never
+canceled, this goroutine is leaked.
 
 The `WithValue` constructor takes a context and returns a context which propagates the previous
 context but also contains a value under the specified key. This is, obviously, achieved by creating
@@ -187,10 +187,9 @@ point out the problem.
 
 ## Conclusion
 
-This post was trying to point out a problem in the Go language. It's not an experience report, but
-it might be convincing enough. In short, cancelation is a problem in Go and the `"context"` package
-does not solve this problem very well. I can't think of any other solution that would solve this
-problem good except for a language change. That is up for Go 2.
+This post was trying to point out a problem in the Go language. In short, cancelation is a problem
+in Go and the `"context"` package does not solve this problem very well. I can't think of any other
+solution that would solve this problem good except for a language change. That is up for Go 2.
 
 Thanks for reading and I'm looking forward to your feedback and ~~hate comments~~ objections ;).
 
