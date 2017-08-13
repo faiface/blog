@@ -6,9 +6,8 @@ draft: true
 
 Some people say that Go can't express good abstractions. They mostly refer to the lack of generics.
 That's because in most object-oriented languages, people are used to creating abstractions around
-types. In Go, the right way is to create abstractions around behaviour using interfaces and
-higher-order functions. When you follow this principle, you find that Go is very powerful at
-creating abstractions.
+types. In Go, the right way is to create abstractions around behaviour using interfaces. When you
+follow this principle, you find that Go is very powerful at creating abstractions.
 
 In this post, I am going to explore a way of creating abstractions using the *'good old composite
 pattern'* from the book called 'Design patterns'. Combined with higher-order functions, this pattern
@@ -57,8 +56,8 @@ func Const(x float64) Expr {
 }
 ```
 
-Now we can define a composite constructor, which sums a other expressions. It takes an aribirary
-number of other expressions and evaluates to their sum.
+Now we can define a composite constructor, say a one which sums other expressions. It takes an
+aribirary number of other expressions and evaluates to their sum.
 
 ```go
 func Sum(exs ...Expr) Expr {
@@ -76,7 +75,7 @@ The expression returned from the `Sum` constructor simply adds the results of th
 together. Note, that we call `ex()` inside the loop, because the `Expr` type is a function and
 calling it yields the result.
 
-Now we have some material to start using our arithmetic expression library.
+Now we have some material to start using our arithmetic expressions library.
 
 ```go
 ex1 := Sum(Const(1), Const(2), Const(3))
@@ -108,8 +107,8 @@ x = ex() // x = 8
 x = ex() // x = 16
 ```
 
-I think this is neat. This is only a little toy example, to give you the taste. Let's go ahead to
-another example. Still toy one, but less toy one.
+I think this is neat. This is just a little toy example, to give you the taste. Let's go ahead to
+another example. Still a toy one, but a little less toy one.
 
 ## Second example: sequences
 
@@ -139,7 +138,7 @@ func (sf SeqFunc) Next() (x float64, ok bool) {
 }
 ```
 
-The `SeqFunc` is a function which satisfies the `Seq` interface implementing the `Next` function by
+The `SeqFunc` is a function which satisfies the `Seq` interface by implementing the `Next` function
 returning the result of itself. This pattern is also used in the standard library with
 [`http.HandlerFunc`](https://golang.org/pkg/net/http/#HandlerFunc).
 
@@ -163,9 +162,9 @@ func Mk(vals ...float64) Seq {
 
 `Mk` sequence tracks the current index in the slice it was created from. Every time `Next` is
 called, the current value is returned and the index is incremented. When we reach the end of the
-slice, we just return `0, false`.
+slice, we simply return `0, false`.
 
-Now, a complement function to `Mk` is collect, which takes a `Seq` and collects it into a slice of
+Now, a complement function to `Mk` is `Collect`, which takes a `Seq` and collects it into a slice of
 numbers. This is obviously only applicable to finite sequences.
 
 ```go
@@ -182,7 +181,7 @@ func Collect(s Seq) []float64 {
 }
 ```
 
-Now, we can turn slice into a sequence and back again, very useful.
+Now, we can turn a slice into a sequence and back again, very useful.
 
 ```go
 fmt.Println(Collect(Mk(1, 2, 3))) // prints [1 2 3]
@@ -228,9 +227,9 @@ This is starting to feel like functional programming. And rightfully so. We are 
 3. Too long expressions :)
 
 The first point is the most important. With the composite pattern, we've been able to create
-building blocks and compose more complicated things using them. Don't believe me? Let's create a
-`Split` function, which takes a sequence and splits it into two sequences at a given index. Just
-watch.
+building blocks and compose more complicated things out of them. Don't believe me? Let's create a
+`Split` function, which takes a sequence and splits it into two sequences at a given index. *Just
+watch!*
 
 ```go
 func Split(n int, s Seq) (l, r Seq) {
@@ -254,8 +253,8 @@ fmt.Println(Collect(l), Collect(r))
 
 Take seven naturals, split them at four and print the results. Simple, right?
 
-When using the composite pattern, you'll find that following the DRY principle becomes very easy and
-you usually end up writing much less code than otherwise.
+When using the composite pattern, you'll find it very easy to follow the DRY principle and you
+usually end up writing much less code than otherwise.
 
 **Excercise:** Create a `Dup` (duplicate) function, which takes a `Seq` and returns two `Seq`s which
 are both identical (in terms of elements) to the original `Seq`. It should work for infinite
@@ -272,7 +271,7 @@ First things first, the library is by no means only my work. The playback heavil
 Hoshi's [Oto](https://godoc.org/github.com/hajimehoshi/oto) library and MP3 decoding depends on his
 [go-mp3](https://github.com/hajimehoshi/go-mp3) package.
 
-The library is built heavily around the composite pattern, for a great good. Let's take a look!
+The library is built around the composite pattern, for a great good. Let's take a look!
 
 ### The `Streamer` interface
 
@@ -299,13 +298,13 @@ type Streamer interface {
 The `Stream` method is given a slice of samples (there are two numbers per sample, the left and the
 right channel), fills it with samples and advances the internal state (if any). It returns the
 number of samples it streamed (filled in the slice). If the `Streamer` already reached it's end and
-no samples were streamed, it returns `false`. Otherwise, it returns `true`. A complete description
+no samples were streamed, it returns `false`. Otherwise, it returns `true`. The complete description
 can be found in the [docs](https://godoc.org/github.com/faiface/beep#Streamer).
 
 The `Err` method is for handling errors, such as file and network errors. Errors are kept out of the
 `Stream` method to simplify composition.
 
-Similarly to `Seq`, there is a helper function type for easily creating new `Streamer`s, which can't
+Similarly to `Seq`, there is a helper function type an easy creation of `Streamer`s, which can't
 error.
 
 ```go
@@ -368,10 +367,10 @@ sr := beep.SampleRate(48000)
 speaker.Init(sr, sr.N(time.Second/10))
 ```
 
-Type [`beep.SampleRate`](https://godoc.org/github.com/faiface/beep#SampleRate) is an `int` with two
-methods. First, `sr.D`, converts number of samples to their duration in `time.Duration`. The second,
-`sr.N`, does the opposite. Since `speaker.Init` takes the number of samples in the buffer, we use
-the `sr.N` method to calculate the number of samples in 1/10s. Smaller buffer size means more
+The type [`beep.SampleRate`](https://godoc.org/github.com/faiface/beep#SampleRate) is an `int` with
+two methods. First, `sr.D`, converts number of samples to their duration in `time.Duration`. The
+second, `sr.N`, does the opposite. Since `speaker.Init` takes the number of samples in the buffer,
+we use the `sr.N` method to calculate the number of samples in 1/10s. Smaller buffer size means more
 responsive playback (lower latency). Larger buffer size means more reliable playback.
 
 To play a streamer, we simply call the `speaker.Play` function.
@@ -393,15 +392,16 @@ speaker.Init(sr, sr.N(time.Second/10))
 speaker.Play(streamer)
 ```
 
-The problem is, that this program immediately exists and we don't hear anything. The solution would
-be to either wait infinitely using `select {}`, or somehow wait until the song ends. We'll learn
-about that in the following section.
+Nice! There is a problem with this code, though. This program immediately exists and we won't hear
+anything. The solution would be to either wait infinitely using `select {}`, or somehow wait until
+the song ends. We'll learn about that in the following section.
 
 ## Composing `Streamer`s
 
 Beep provides a number of built-in streamer compositors. Let's take a look at a few of them.
 
-One of the most important ones is `Seq`. It takes some streamers and streams them one after another.
+One of the most important ones is `Seq`. Don't get confused, this has nothing to do with the
+sequence composite interface above. It takes some streamers and streams them one after another.
 Here's how it's implemented.
 
 ```go
@@ -429,11 +429,11 @@ speaker.Play(beep.Seq(streamer1, streamer2))
 ```
 
 This code plays two different streamers one after another. *Note, that a streamer is not immutable
-and gets drained after playing. Thus `beep.Seq(streamer1, streamer1)` will not play the same
+and gets drained after playing. Therefore `beep.Seq(streamer1, streamer1)` will not play the same
 streamer twice, because on the second time it will already be drained.*
 
-Another useful streamer is `Callback`. This is streamer which does not stream any audio, but instead
-just calls a function when it starts streaming (and ends streaming immediately).
+Another useful streamer is `Callback`. This is a streamer which streams no audio, but instead calls
+a function when it starts streaming (and ends streaming immediately).
 
 With this knowledge, we are ready to play a song until it ends.
 
@@ -452,12 +452,12 @@ We create a channel which will signal the end of the song. Then, we play a seque
 a callback. Therefore, when the song finishes, the callback gets called. The callback closes the
 signaling channel and causes the receive operation proceed. Neat.
 
-**What if we want to play a streamer which streams at a different sampler rate than the speaker?**
-If you just played it as it is, the playback would be either too fast or too slow. Beep provides a
+**What if we want to play a streamer which streams at a different sample rate than the speaker?** If
+you'd just play it as it is, the playback would be either too fast or too slow. Beep provides a
 `Resample` compositor exactly for this.
 
-Let's say we have a `streamer` which streams at the sample rate of `44100`, but we have the
-`speaker` intialized to the sample rate of `48000`. Here's how we do it.
+Let's say we have a streamer which streams at the sample rate of `44100`, but we initialized the
+speaker to the sample rate of `48000`. Here's how we do it.
 
 ```go
 speaker.Play(beep.Resample(4, 44100, 48000, streamer))
@@ -497,7 +497,23 @@ toTheLeft := effects.Pan{
 ```
 
 Of course, if the built-in compositors and streamers are not enugh, **you can easily create your own
-ones.** All you need to do is to implement a `Streamer`.
+ones.** All you need to do is to implement a `Streamer`. For example, here's an infinite sine wave
+streamer. Of course, you can use `beep.Take` on it to turn it into a finite streamer.
+
+```go
+func SineWave(sr beep.SampleRate, freq float64) beep.Streamer {
+        t := 0.0
+        return beep.StreamerFunc(func(samples [][2]float64) (n int, ok bool) {
+                for i := range samples {
+                        y := math.Sin(math.Pi * freq * t)
+                        samples[i][0] = y
+                        samples[i][1] = y
+                        t += sr.D(1).Seconds()
+                }
+                return len(samples), true
+        })
+}
+```
 
 ## Conclusion
 
@@ -509,6 +525,10 @@ Of course, the composite pattern is not a fit for everything. But when it is, **
 using it**, as it will greatly improve the quality and DRYness of your code.
 
 I think it's a great fit for Go and an idiomatic solution to many abstraction problems. **Go has
-interfaces and higher-order functions, so use them!** Thanks.
+interfaces and higher-order functions, so use them!**
+
+Currently, I'm figuring out how to incorporate the composite pattern into my
+[Pixel](https://github.com/faiface/pixel) game library. If you have any ideas on that, please share
+;)
 
 Michal Štrba
