@@ -165,7 +165,7 @@ involved.
 ## Go 2 should explicitly address the cancelation problem
 
 I think it's a weakness of the Go programming language that we needed to introduce a package like
-`"context"`. Go makes it very easy to create gorourines and communicate between them. However, the
+`"context"`. Go makes it very easy to create goroutines and communicate between them. However, the
 `"context"` package is a proof that Go makes it hard enough to *arrange goroutines to finish*. I
 believe this problem should be solved directly in the language. The language should provide a
 solution, which is:
