@@ -1,7 +1,7 @@
 ---
 title: "How I built an audio library using the composite pattern and higher-order functions"
-date: 2017-08-12T16:21:12+02:00
-draft: true
+date: 2017-08-13T16:21:12+02:00
+draft: false
 ---
 
 Some people say that Go can't express good abstractions. They mostly refer to the lack of generics.
