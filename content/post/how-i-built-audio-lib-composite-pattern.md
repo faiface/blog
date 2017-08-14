@@ -126,7 +126,7 @@ type Seq interface {
 }
 ```
 
-We could use a function type again, but I decided to use a proper interface for clarity.
+We could use a function type again, but I decided to use a proper interface, for clarity.
 Nonetheless, we can create a helper function type, which will simplify creating instances of the
 interface.
 
@@ -164,7 +164,7 @@ func Mk(vals ...float64) Seq {
 called, the current value is returned and the index is incremented. When we reach the end of the
 slice, we simply return `0, false`.
 
-Now, a complement function to `Mk` is `Collect`, which takes a `Seq` and collects it into a slice of
+A complement function to `Mk` is `Collect`, which takes a `Seq` and collects it into a slice of
 numbers. This is obviously only applicable to finite sequences.
 
 ```go
@@ -264,7 +264,7 @@ sequences too.
 
 Now that you've certainly got a hang of the composite pattern, let's see how it can be used in a
 real library. The library I'm talking about is an audio library I've been working on for the past
-month. It's called [Beep](https://github.com/faiface/beep), which is the name chosen from a [poll on
+month. It's called [Beep](https://github.com/faiface/beep), which is a name chosen from a [poll on
 Reddit](https://www.reddit.com/r/golang/comments/6n1plq/choose_the_name_for_a_new_audio_library_in_go/).
 
 First things first, the library is by no means only my work. The playback heavily depends on Hajime
@@ -298,14 +298,14 @@ type Streamer interface {
 The `Stream` method is given a slice of samples (there are two numbers per sample, the left and the
 right channel), fills it with samples and advances the internal state (if any). It returns the
 number of samples it streamed (filled in the slice). If the `Streamer` already reached it's end and
-no samples were streamed, it returns `false`. Otherwise, it returns `true`. The complete description
+has no samples to stream, it returns `false`. Otherwise, it returns `true`. The complete description
 can be found in the [docs](https://godoc.org/github.com/faiface/beep#Streamer).
 
 The `Err` method is for handling errors, such as file and network errors. Errors are kept out of the
 `Stream` method to simplify composition.
 
-Similarly to `Seq`, there is a helper function type an easy creation of `Streamer`s, which can't
-error.
+Similar to `Seq`, there is a helper function type which enables easy creation of `Streamer`s that
+can't error.
 
 ```go
 type StreamerFunc func(samples [][2]float64) (n int, ok bool)
