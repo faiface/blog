@@ -138,8 +138,8 @@ func (sf SeqFunc) Next() (x float64, ok bool) {
 }
 ```
 
-The `SeqFunc` is a function which satisfies the `Seq` interface by implementing the `Next` function
-returning the result of itself. This pattern is also used in the standard library with
+The `SeqFunc` is a function type which satisfies the `Seq` interface by implementing the `Next`
+function returning the result of itself. This pattern is also used in the standard library with
 [`http.HandlerFunc`](https://golang.org/pkg/net/http/#HandlerFunc).
 
 Let's start creating actual `Seq` implementations.
