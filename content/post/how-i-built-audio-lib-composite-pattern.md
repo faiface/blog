@@ -392,7 +392,7 @@ speaker.Init(sr, sr.N(time.Second/10))
 speaker.Play(streamer)
 ```
 
-Nice! There is a problem with this code, though. This program immediately exists and we won't hear
+Nice! There is a problem with this code, though. This program immediately exits and we won't hear
 anything. The solution would be to either wait infinitely using `select {}`, or somehow wait until
 the song ends. We'll learn about that in the following section.
 
